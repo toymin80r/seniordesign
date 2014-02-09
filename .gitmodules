@@ -1,3 +1,12 @@
 [submodule "crafty"]
 	path = crafty
 	url = https://github.com/craftyjs/Crafty.git
+[submodule "test/node_modules/nodeunit"]
+	path = test/node_modules/nodeunit
+	url = git://github.com/caolan/nodeunit.git
+[submodule "test/node_modules/amdefine"]
+	path = test/node_modules/amdefine
+	url = https://github.com/jrburke/amdefine.git
+[submodule "src/node_modules/amdefine"]
+	path = src/node_modules/amdefine
+	url = https://github.com/jrburke/amdefine.git
