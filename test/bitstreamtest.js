@@ -22,7 +22,7 @@ define(['../src/bitstream'], function(BitStream) {
         stream.writeString("Hello");
         stream.writeBool(true);
 
-        test.ok(!stream.isEmpty())
+        test.ok(!stream.isEmpty());
 
         stream.reset();
 
@@ -77,4 +77,3 @@ define(['../src/bitstream'], function(BitStream) {
         testWriteReadOrderAndCorrectness: testWriteReadOrderAndCorrectness
     }
 });
-

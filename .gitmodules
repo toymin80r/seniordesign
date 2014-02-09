@@ -10,3 +10,6 @@
 [submodule "src/node_modules/amdefine"]
 	path = src/node_modules/amdefine
 	url = https://github.com/jrburke/amdefine.git
+[submodule "src/node_modules/promise"]
+	path = src/node_modules/promise
+	url = https://github.com/then/promise.git
