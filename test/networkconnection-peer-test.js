@@ -1,54 +1,49 @@
-
 if(typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(['../src/networkconnection'], function(NetworkConnection) {
+define(['../src/networkconnection', '../src/eventemitter'], function(NetworkHostFactory, EventEmitter) {
+    var hostFactory = new NetworkHostFactory('peer');
+    var port = 9000;
+
     function setUp(callback) {
-        this.serverConnection = new NetworkConnection("peer-host");
-        this.clientConnection = new NetworkConnection("peer-host");
         callback();
     }
 
     function tearDown(callback) {
-        delete this.connection;
         callback();
     }
 
     function testConnectDisconnect(test) {
-        var serverConnection = this.serverConnection;
-        var clientConnection = this.clientConnection;
+        var serverID = 0;
+        var clientID = 1;
+        var server = hostFactory.createServer(serverID);
+        var client = hostFactory.createClient(clientID);
+        var clientConnectEvent = false;
+        var serverConnectEvent = false;
 
-        serverConnection.startServer(0);
-        serverConnection.onClientDisconnect(function(client, err) {
-            if(err) {
-                /* Something went wrong */
-            }
-            else {
-                /* OK */
-            }
+        test.expect(5);
+
+        server.start().then(function() {
+            client.connect('localhost', port, serverID);
         });
 
-        serverConnection.onClientConnect(function(client, err) {
-            if(err) {
-            }
-            else {
-            }
+        client.on('connect', function() {
+            test.ok(!clientConnectEvent);
+            clientConnectEvent = true;
         });
 
-        clientConnection.connectToServer("localhost", 0)
-            .then(function() {
-                doClientDisconnect();
-            }, function(err) {
-                /* something went wrong */
-            });
+        server.on('connect' function(clientID_) {
+            test.ok(!serverDisconnectEvent);
+            test.equal(clientID_, clientID);
+            serverConnectEvent = true;
+        });
 
-        function doClientDisconnect() {
-            clientConnection.disconnectFromServer()
-                .then(function() {
-                }, function(err) {
-                });
-        }
+        server.on('disconnect', function(clientID_) {
+            test.ok(serverConnectEvent);
+            test.equal(clientID_, clientID);
+            test.done();
+        });
     }
 
     return {

@@ -1,4 +1,7 @@
-seniordesign
+Setting Up Submodules
 ============
 
-Senior Design Repository
+git submodule init
+git submodule sync
+git submodule update
+

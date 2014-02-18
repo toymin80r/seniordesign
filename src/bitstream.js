@@ -9,18 +9,24 @@ define(function(require) {
     BitStream.prototype = {
         writeNumber: function(number) {
             this._buffer.push(number);
+
+            return this;
         },
         readNumber: function() {
             return this._buffer.shift();
         },
         writeString: function(string) {
             this._buffer.push(string);
+
+            return this;
         },
         readString: function() {
             return this._buffer.shift();
         },
         writeBool: function(boolean) {
             this._buffer.push(boolean);
+
+            return this;
         },
         readBool: function() {
             return this._buffer.shift();
@@ -30,6 +36,8 @@ define(function(require) {
         },
         reset: function() {
             this._buffer = [];
+
+            return this;
         }
     };
 

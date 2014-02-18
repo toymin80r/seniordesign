@@ -63,12 +63,77 @@ define(['../src/eventemitter'], function(EventEmitter) {
         test.done();
     }
 
+    function testRemoveListeners(test) {
+        var emitter = this.emitter;
+        var runCount = { 
+            'eventHandler1': 0,
+            'eventHandler2': 0,
+            'eventHandler3': 0
+        };
+
+        function eventHandler1() {
+            runCount['eventHandler1'] += 1;
+        }
+
+        function eventHandler2() {
+            runCount['eventHandler2'] += 1;
+        }
+
+        function eventHandler3() {
+            runCount['eventHandler3'] += 1;
+        }
+
+        // test basic functionality
+        emitter.on('myEvent', eventHandler1);
+        emitter.on('myEvent', eventHandler2);
+        emitter.on('myEvent', eventHandler3);
+
+        test.ok(emitter.emit('myEvent'));
+
+        test.equal(runCount['eventHandler1'], 1);
+        test.equal(runCount['eventHandler2'], 1);
+        test.equal(runCount['eventHandler3'], 1);
+
+        emitter.removeListener('myEvent', eventHandler1);
+        test.ok(emitter.emit('myEvent'));
+
+        test.equal(runCount['eventHandler1'], 1);
+        test.equal(runCount['eventHandler2'], 2);
+        test.equal(runCount['eventHandler3'], 2);
+
+        emitter.on('myEvent', eventHandler1);
+        test.ok(emitter.emit('myEvent'));
+
+        test.equal(runCount['eventHandler1'], 2);
+        test.equal(runCount['eventHandler2'], 3);
+        test.equal(runCount['eventHandler3'], 3);
+
+        emitter.removeAllListeners('myEvent');
+        test.ok(!emitter.emit('myEvent'));
+
+        test.equal(runCount['eventHandler1'], 2);
+        test.equal(runCount['eventHandler2'], 3);
+        test.equal(runCount['eventHandler3'], 3);
+
+        // test error handling. removing all handlers from empty event
+        test.doesNotThrow(function() { emitter.removeAllListeners('myEvent') });
+        // test error handling. removing all handlers from non-existent event
+        test.doesNotThrow(function() { emitter.removeAllListeners('nonExistantEvent') });
+
+        // test removing an event handler from a non-empty event that has not been added to that event
+        emitter.on('myEvent', eventHandler1);
+        test.doesNotThrow(function() { emitter.removeListener('myEvent', eventHandler2); });
+
+        test.done();
+    }
+
     return {
         setUp: setUp,
         tearDown: tearDown,
         testOneEvent: testOneEvent,
         testEmitNoEvent: testEmitNoEvent,
         testMultipleEvents: testMultipleEvents,
-        testOnceEvent: testOnceEvent
+        testOnceEvent: testOnceEvent,
+        testRemoveListeners: testRemoveListeners
     }
 });
