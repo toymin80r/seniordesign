@@ -15,16 +15,12 @@ define(['../../src/network/index', '../../src/eventemitter'], function(NetworkHo
     }
 
     function testConnectDisconnect(test) {
-        var serverID = 0;
-        var clientID = 1;
-        var server = hostFactory.createServer(serverID);
-        var client = hostFactory.createClient(clientID);
+        var server = hostFactory.createServer();
+        var client = hostFactory.createClient();
         var clientConnectEvent = false;
         var serverConnectEvent = false;
 
-        /*test.expect(5);
-
-        server.start().then(function() {
+        server.start('localhost', port).then(function(serverID) {
             client.connect('localhost', port, serverID);
         });
 
@@ -33,18 +29,16 @@ define(['../../src/network/index', '../../src/eventemitter'], function(NetworkHo
             clientConnectEvent = true;
         });
 
-        server.on('connect' function(clientID_) {
-            test.ok(!serverDisconnectEvent);
-            test.equal(clientID_, clientID);
+        server.on('connect', function(clientID) {
+            test.ok(!serverConnectEvent);
             serverConnectEvent = true;
+            client.disconnect();
         });
 
-        server.on('disconnect', function(clientID_) {
+        server.on('disconnect', function(clientID) {
             test.ok(serverConnectEvent);
-            test.equal(clientID_, clientID);
             test.done();
-        });*/
-        test.done();
+        });
     }
 
     return {
