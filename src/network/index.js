@@ -2,10 +2,6 @@ if(typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-if(typeof Promise !== 'function') {
-    var Promise = require('promise');
-}
-
 define(['./connection-types/peer-host', 
         './connection-types/server-host'], function(PeerHost, ServerHost) {
 

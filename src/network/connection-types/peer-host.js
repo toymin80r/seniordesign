@@ -2,7 +2,7 @@ if(typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define('../../eventemitter', function(EventEmitter) {
+define(['../../../lib/rsvp', '../../eventemitter'], function(Promise, EventEmitter) {
     function Server(serverID) {
         this._serverID = serverID;
     }
