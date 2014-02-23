@@ -6,9 +6,11 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
     var Promise = RSVP.Promise;
 
     function Server() {
+        EventEmitter.call(this);
     }
 
-    Server.prototype = new EventEmitter();
+    Server.prototype = EventEmitter.prototype;
+    Server.prototype.constructor = Server;
     Server.prototype.start = function(serverAddress, serverPort) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {
@@ -43,10 +45,9 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
                     self.emit('data', data);
                 });
             }).on('error', function(err) {
-                console.log('Server could not be started', err.message);
+                console.log('Server error', err.message);
 
-                //server.destroy();
-                //reject(err);
+                reject(err);
             });
 
             self._server = server;
@@ -76,9 +77,11 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
 
     function Client(clientID) {
         this._clientID = clientID;
+        EventEmitter.call(this);
     }
 
-    Client.prototype = new EventEmitter();
+    Client.prototype = EventEmitter.prototype;
+    Client.prototype.constructor = Client;
     Client.prototype.connect = function(serverAddress, serverPort, serverID) {
         var self = this;
         var promise = new Promise(function(resolve, reject) {

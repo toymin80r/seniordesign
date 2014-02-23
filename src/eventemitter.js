@@ -3,9 +3,9 @@ if(typeof define !== 'function') {
 }
 
 define(function() {
-    var EventEmitter = function() {
+    function EventEmitter() {
         this._eventHandlers = { };
-    };
+    }
 
     function typeCheckEvent(event) {
         if(typeof event !== 'string') {
