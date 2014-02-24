@@ -32,7 +32,7 @@ define(['../../src/network/index', '../../src/eventemitter'], function(NetworkHo
         server.on('connect', function(clientID) {
             test.ok(!serverConnectEvent);
             serverConnectEvent = true;
-            client.disconnect();
+            setTimeout(function() { client.disconnect(); }, 1000);
         });
 
         server.on('disconnect', function(clientID) {
