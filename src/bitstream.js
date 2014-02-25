@@ -3,8 +3,13 @@ if(typeof define !== 'function') {
 }
 
 define(function(require) {
-    var BitStream = function() {
-        this.reset();
+    var BitStream = function(base) {
+        if(base instanceof Object && base._buffer instanceof Array) {
+            this._buffer = base._buffer;
+        }
+        else {
+            this.reset();
+        }
     };
     BitStream.prototype = {
         writeNumber: function(number) {

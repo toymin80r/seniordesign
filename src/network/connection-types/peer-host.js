@@ -2,7 +2,9 @@ if(typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
 
-define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], function(_, _, EventEmitter) {
+define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter', '../../bitstream'], 
+    function(_, _, EventEmitter, BitStream) {
+
     var Promise = RSVP.Promise;
 
     function Server() {
@@ -47,7 +49,7 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
                     // error occurred
                 }).on('data', function(data) {
                     // received data from client
-                    self.emit('data', data);
+                    self.emit('data', { data: new BitStream(data), client: clientID });
                 });
             }).on('error', function(err) {
                 console.log('Server error', err.message);
@@ -125,7 +127,6 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
                 console.log('Client could not be started', err);
 
                 client.destroy();
-                reject(err);
             })
 
             var connection = client.connect(serverID);
@@ -143,7 +144,7 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
                 reject(err);
             }).on('data', function(data) {
                 console.log('Client received data from server', data);
-                self.emit('data', data);
+                self.emit('data', new BitStream(data));
             });
 
             self._client = client;
