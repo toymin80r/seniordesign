@@ -109,7 +109,7 @@ define(['../../src/network/index', '../../src/eventemitter', '../../src/bitstrea
 
             test.equal(clientID, expectedClientID);
 
-            for(var i=messagesToSend-receivedMessages;i<=messagesToSend;i++) {
+            for(var i=messagesToSend;i>=messagesToSend-receivedMessages;i--) {
                 test.equal(data.readNumber(), i);
             }
 
