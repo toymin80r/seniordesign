@@ -7,6 +7,7 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
 
     function Server() {
         EventEmitter.call(this);
+        this._connections = { };
     }
 
     Server.prototype = EventEmitter.prototype;
@@ -27,6 +28,8 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
             }).on('connection', function(connection) {
                 var clientID = connection.peer;
 
+                self._connections[clientID] = connection;
+
                 connection.on('open', function() {
                     // connection is fully established
                     console.log('Client', clientID, 'connected to server', self._serverID);
@@ -35,6 +38,8 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
                 }).on('close', function() {
                     // client disconnected
                     console.log('Client', clientID, 'disconnected from server', self._serverID);
+
+                    delete self._connections[clientID];
 
                     self.emit('disconnect', clientID);
                 }).on('error', function(error) {
@@ -69,7 +74,30 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
     };
 
     Server.prototype.send = function(bitStream, clientID) {
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
+            if(typeof clientID === 'undefined') {
+                // broadcast
+                for(var id in self._connections) {
+                    var connection = self._connections[id];
+
+                    connection.send(bitStream);
+                }
+
+                resolve();
+            }
+            else if(!self._connections.hasOwnProperty(clientID)) {
+                // invalid client specified
+                reject(new Error('Invalid client ID (' + clientID + ')'));
+            }
+            else {
+                // single client send
+                var clientConnection = self._connections[clientID];
+
+                clientConnection.send(bitStream);
+
+                resolve();
+            }
         });
 
         return promise;
@@ -134,8 +162,17 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter'], functio
         return promise;
     };
 
-    Client.prototype.send = function(bitStream, clientID) {
+    Client.prototype.send = function(bitStream) {
+        var self = this;
         var promise = new Promise(function(resolve, reject) {
+            if(typeof self._connection === 'undefined') {
+                reject(new Error('Client not connected to server'));
+            }
+            else {
+                self._connection.send(bitStream);
+
+                resolve();
+            }
         });
 
         return promise;
