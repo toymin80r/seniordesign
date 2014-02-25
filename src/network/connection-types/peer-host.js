@@ -12,7 +12,7 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter', '../../b
         this._connections = { };
     }
 
-    Server.prototype = EventEmitter.prototype;
+    Server.prototype = new EventEmitter();
     Server.prototype.constructor = Server;
     Server.prototype.start = function(serverAddress, serverPort) {
         var self = this;
@@ -110,7 +110,7 @@ define(['../../../lib/rsvp', '../../../lib/peer', '../../eventemitter', '../../b
         EventEmitter.call(this);
     }
 
-    Client.prototype = EventEmitter.prototype;
+    Client.prototype = new EventEmitter();
     Client.prototype.constructor = Client;
     Client.prototype.connect = function(serverAddress, serverPort, serverID) {
         var self = this;

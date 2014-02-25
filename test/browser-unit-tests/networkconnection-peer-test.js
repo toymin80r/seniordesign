@@ -50,8 +50,7 @@ define(['../../src/network/index', '../../src/eventemitter', '../../src/bitstrea
         var serverConnectEvent = false;
 
         server.start('localhost', port).then(function(serverID) {
-            client.connect('localhost', port, serverID).then(function() {}, function(err) {
-            });
+            client.connect('localhost', port, serverID);
         });
 
         client.on('connect', function() {
@@ -95,7 +94,7 @@ define(['../../src/network/index', '../../src/eventemitter', '../../src/bitstrea
                     else {
                         clearInterval(interval);
                     }
-                }, 100);
+                }, 15);
             }, function(err) {
                 test.ok(false, JSON.stringify(err, undefined, 4));
             });
@@ -123,11 +122,70 @@ define(['../../src/network/index', '../../src/eventemitter', '../../src/bitstrea
         });
     }
 
+    function testServerSend(test) {
+        var server = hostFactory.createServer();
+        var client = hostFactory.createClient();
+        var messagesToSend = 10;
+        var receivedMessages = 0;
+        var clientID;
+
+        server.start('localhost', port).then(function(serverID) {
+            client.connect('localhost', port, serverID);
+        }, function(err) {
+            test.ok(false, JSON.stringify(err, undefined, 4));
+        });
+
+        server.on('connect', function(_clientID) {
+            var bitStream = new BitStream();
+            var counterSend = Math.floor(messagesToSend/2);
+            var counterBroadcast = messagesToSend - counterSend;
+            var counter = 10;
+            clientID = _clientID;
+
+            var intervalSend = setInterval(function() {
+                if(counter) {
+                    bitStream.writeNumber(counter);
+                    server.send(bitStream, clientID);
+                    counter --;
+                }
+                else {
+                    clearInterval(intervalSend);
+                }
+            }, 15);
+
+            var intervalBroadcast = setInterval(function() {
+                if(counter) {
+                    bitStream.writeNumber(counter);
+                    server.send(bitStream);
+                    counter --;
+                }
+                else {
+                    clearInterval(intervalBroadcast);
+                }
+            }, 15);
+        });
+
+        client.on('data', function(data) {
+            for(var i=messagesToSend;i>=messagesToSend-receivedMessages;i--) {
+                test.equal(data.readNumber(), i);
+            }
+
+            console.log('Client (' + clientID + ') received', data);
+
+            receivedMessages ++;
+
+            if(receivedMessages === messagesToSend) {
+                test.done();
+            }
+        });
+    }
+
     return {
         setUp: setUp,
         tearDown: tearDown,
         testClientDisconnect: testClientDisconnect,
         testServerDisconnect: testServerDisconnect,
-        testClientSend: testClientSend
+        testClientSend: testClientSend,
+        testServerSend: testServerSend
     }
 });
