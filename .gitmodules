@@ -19,3 +19,6 @@
 [submodule "test/node_modules/peer"]
 	path = test/node_modules/peer
 	url = https://github.com/peers/peerjs-server.git
+[submodule "src/node_modules/socketio"]
+	path = src/node_modules/socketio
+	url = https://github.com/LearnBoost/socket.io.git
